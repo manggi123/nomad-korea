@@ -1,24 +1,36 @@
 "use client";
 
-import { Star, SlidersHorizontal } from "lucide-react";
+import { Star, SlidersHorizontal, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import CityCard from "@/components/city-card";
 import { mockCities } from "@/lib/mock-data";
+import { useHomeFilters } from "@/hooks/use-home-filters";
+import { filterCities } from "@/lib/city-filters";
+import { useMemo } from "react";
 
 export default function TopRatedCities() {
-  const topRatedCities = [...mockCities]
-    .sort((a, b) => b.avgRating - a.avgRating)
-    .slice(0, 9);
+  const { filters, hasActiveFilters, setRegion, setBudget, setAmenity } = useHomeFilters();
 
-  const filters = [
-    { label: "전체", value: "all", active: true },
-    { label: "서울", value: "seoul" },
-    { label: "경기", value: "gyeonggi" },
-    { label: "부산", value: "busan" },
-    { label: "제주", value: "jeju" },
-    { label: "강원", value: "gangwon" },
+  // 필터 적용
+  const topRatedCities = useMemo(() => {
+    const cities = hasActiveFilters
+      ? filterCities(mockCities, filters)
+      : mockCities;
+
+    return [...cities]
+      .sort((a, b) => b.avgRating - a.avgRating)
+      .slice(0, 9);
+  }, [filters, hasActiveFilters]);
+
+  const regionFilterOptions = [
+    { label: "전체", value: "all" as const },
+    { label: "서울", value: "seoul" as const },
+    { label: "경기", value: "gyeonggi" as const },
+    { label: "부산", value: "busan" as const },
+    { label: "제주", value: "jeju" as const },
+    { label: "강원", value: "gangwon" as const },
   ];
 
   const sortOptions = [
@@ -30,7 +42,7 @@ export default function TopRatedCities() {
 
   return (
     <section className="py-16 bg-gray-50">
-      <div className="container px-4">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-yellow-100 rounded-lg">
@@ -55,11 +67,12 @@ export default function TopRatedCities() {
                     지역
                   </h3>
                   <div className="space-y-2">
-                    {filters.map((filter) => (
+                    {regionFilterOptions.map((filter) => (
                       <button
                         key={filter.value}
+                        onClick={() => setRegion(filter.value)}
                         className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                          filter.active
+                          filters.region === filter.value
                             ? "bg-primary text-white"
                             : "hover:bg-gray-100"
                         }`}
@@ -75,18 +88,23 @@ export default function TopRatedCities() {
                   <h3 className="font-semibold mb-3">월 예산</h3>
                   <div className="space-y-2">
                     {[
-                      "100만원 이하",
-                      "100-150만원",
-                      "150-200만원",
-                      "200만원 이상",
+                      { label: "전체", value: "all" as const },
+                      { label: "100만원 이하", value: "budget" as const },
+                      { label: "100-150만원", value: "mid" as const },
+                      { label: "150-200만원", value: "premium" as const },
+                      { label: "200만원 이상", value: "luxury" as const },
                     ].map((budget) => (
-                      <label
-                        key={budget}
-                        className="flex items-center gap-2 cursor-pointer"
+                      <button
+                        key={budget.value}
+                        onClick={() => setBudget(budget.value)}
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                          filters.budget === budget.value
+                            ? "bg-primary text-white"
+                            : "hover:bg-gray-100"
+                        }`}
                       >
-                        <input type="checkbox" className="rounded" />
-                        <span className="text-sm">{budget}</span>
-                      </label>
+                        {budget.label}
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -95,21 +113,29 @@ export default function TopRatedCities() {
                 <div>
                   <h3 className="font-semibold mb-3">편의시설</h3>
                   <div className="space-y-2">
-                    {["코워킹 스페이스", "카페", "빠른 인터넷", "24시간 이용"].map(
-                      (facility) => (
-                        <label
-                          key={facility}
-                          className="flex items-center gap-2 cursor-pointer"
-                        >
-                          <input type="checkbox" className="rounded" />
-                          <span className="text-sm">{facility}</span>
-                        </label>
-                      )
-                    )}
+                    {[
+                      { label: "전체", value: "all" as const },
+                      { label: "코워킹 많음 (3개+)", value: "coworking" as const },
+                      { label: "카페 많음 (5개+)", value: "cafe" as const },
+                      { label: "빠른 인터넷 (100Mbps+)", value: "fast-internet" as const },
+                      { label: "환경 점수 높음 (4.0+)", value: "high-environment" as const },
+                    ].map((facility) => (
+                      <button
+                        key={facility.value}
+                        onClick={() => setAmenity(facility.value)}
+                        className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                          filters.amenity === facility.value
+                            ? "bg-primary text-white"
+                            : "hover:bg-gray-100"
+                        }`}
+                      >
+                        {facility.label}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                <Button className="w-full">필터 적용</Button>
+                {/* 필터는 실시간으로 적용되므로 별도의 적용 버튼 불필요 */}
               </CardContent>
             </Card>
           </aside>
@@ -118,15 +144,12 @@ export default function TopRatedCities() {
           <div className="lg:col-span-3 space-y-6">
             {/* Mobile Filters & Sort */}
             <div className="flex gap-2 lg:hidden overflow-x-auto pb-2">
-              <Button variant="outline" size="sm">
-                <SlidersHorizontal className="h-4 w-4 mr-2" />
-                필터
-              </Button>
-              {filters.slice(0, 4).map((filter) => (
+              {regionFilterOptions.slice(0, 5).map((filter) => (
                 <Badge
                   key={filter.value}
-                  variant={filter.active ? "default" : "outline"}
+                  variant={filters.region === filter.value ? "default" : "outline"}
                   className="cursor-pointer whitespace-nowrap"
+                  onClick={() => setRegion(filter.value)}
                 >
                   {filter.label}
                 </Badge>
@@ -148,11 +171,19 @@ export default function TopRatedCities() {
             </div>
 
             {/* Cities Grid */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topRatedCities.map((city) => (
-                <CityCard key={city.id} city={city} />
-              ))}
-            </div>
+            {topRatedCities.length > 0 ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {topRatedCities.map((city) => (
+                  <CityCard key={city.id} city={city} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-muted/50 rounded-lg">
+                <Filter className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-semibold mb-2">조건에 맞는 도시가 없습니다</h3>
+                <p className="text-muted-foreground">필터 조건을 변경해보세요</p>
+              </div>
+            )}
 
             {/* Load More */}
             <div className="text-center pt-4">

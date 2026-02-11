@@ -16,6 +16,8 @@ export interface City {
   devScore: number;
   designScore: number;
   trendingScore?: number;
+  likes?: number;
+  dislikes?: number;
 }
 
 // 리뷰 데이터 타입
@@ -111,4 +113,71 @@ export interface ReviewFilterState {
   sortBy: ReviewSortOption;
   jobFilter: ReviewJobFilter;
   page: number;
+}
+
+// 카페 데이터 타입
+export interface Cafe {
+  id: string;
+  name: string;
+  cityId: string;
+  rating: number;
+  priceLevel: 1 | 2 | 3;
+  wifiSpeed: number;
+  hasOutlet: boolean;
+  address: string;
+}
+
+// 코워킹 스페이스 데이터 타입
+export interface CoworkingSpace {
+  id: string;
+  name: string;
+  cityId: string;
+  rating: number;
+  dailyPrice: number;
+  monthlyPrice: number;
+  amenities: string[];
+  address: string;
+}
+
+// 리뷰 입력 데이터 타입
+export interface ReviewInput {
+  cityId: string;
+  rating: number;
+  comment: string;
+  jobCategory: JobCategory;
+}
+
+// 유효성 검사 결과 타입
+export interface ValidationResult {
+  isValid: boolean;
+  errors: Record<string, string>;
+}
+
+// 도시 좋아요/싫어요 데이터 타입
+export interface CityLikes {
+  cityId: string;
+  likes: number;
+  dislikes: number;
+}
+
+// 사용자의 도시 반응 타입
+export interface UserCityReaction {
+  cityId: string;
+  reaction: 'like' | 'dislike' | null;
+}
+
+// 홈페이지 필터 타입
+export type BudgetFilter = 'all' | 'budget' | 'mid' | 'premium' | 'luxury';
+export type RegionFilter = 'all' | 'seoul' | 'gyeonggi' | 'busan' | 'jeju' | 'gangwon' | 'chungcheong' | 'jeolla' | 'gyeongsang';
+export type EnvironmentFilter = 'all' | 'urban' | 'suburb' | 'nature' | 'beach' | 'mountain';
+export type SeasonFilter = 'all' | 'spring' | 'summer' | 'fall' | 'winter';
+export type AmenityFilter = 'all' | 'coworking' | 'cafe' | 'fast-internet' | 'high-environment';
+
+// 홈페이지 필터 상태
+export interface HomeFilters {
+  budget: BudgetFilter;
+  region: RegionFilter;
+  environment: EnvironmentFilter;
+  season: SeasonFilter;
+  amenity: AmenityFilter;
 }

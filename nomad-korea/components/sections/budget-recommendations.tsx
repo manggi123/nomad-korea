@@ -6,22 +6,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockCities } from "@/lib/mock-data";
+import { useHomeFilters } from "@/hooks/use-home-filters";
+import { filterCities } from "@/lib/city-filters";
+import { useMemo } from "react";
 
 export default function BudgetRecommendations() {
-  const budgetTiers = [
+  const { filters, hasActiveFilters } = useHomeFilters();
+
+  // 필터 적용
+  const allFilteredCities = useMemo(() => {
+    return hasActiveFilters ? filterCities(mockCities, filters) : mockCities;
+  }, [filters, hasActiveFilters]);
+
+  const budgetTiers = useMemo(() => [
     {
       title: "알뜰형",
       budget: "~100만원",
       description: "합리적인 비용으로 노마드 라이프 시작",
       color: "bg-green-100 text-green-700",
-      cities: mockCities.filter((c) => c.avgMonthlyCost <= 1000000).slice(0, 3),
+      cities: allFilteredCities.filter((c) => c.avgMonthlyCost <= 1000000).slice(0, 3),
     },
     {
       title: "표준형",
       budget: "100-150만원",
       description: "편의성과 가성비의 균형",
       color: "bg-blue-100 text-blue-700",
-      cities: mockCities
+      cities: allFilteredCities
         .filter((c) => c.avgMonthlyCost > 1000000 && c.avgMonthlyCost <= 1500000)
         .slice(0, 3),
     },
@@ -30,13 +40,13 @@ export default function BudgetRecommendations() {
       budget: "150-200만원",
       description: "최상의 환경에서 최고의 생산성",
       color: "bg-purple-100 text-purple-700",
-      cities: mockCities.filter((c) => c.avgMonthlyCost > 1500000).slice(0, 3),
+      cities: allFilteredCities.filter((c) => c.avgMonthlyCost > 1500000).slice(0, 3),
     },
-  ];
+  ], [allFilteredCities]);
 
   return (
     <section className="py-16 bg-white">
-      <div className="container px-4">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-green-100 rounded-lg">

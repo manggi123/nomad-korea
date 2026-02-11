@@ -4,6 +4,7 @@ import { Star, Wifi, Coffee, Users, TrendingUp } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { City } from '@/types';
+import { CityLikesButton } from '@/components/city-likes-button';
 
 interface CityCardProps {
   city: City;
@@ -86,6 +87,11 @@ export default function CityCard({ city, showTrending = false }: CityCardProps) 
               <div className="text-muted-foreground mb-1">디자인</div>
               <div className="font-medium">{city.designScore}</div>
             </div>
+          </div>
+
+          {/* 좋아요/싫어요 버튼 */}
+          <div className="mt-3 pt-3 border-t flex justify-center">
+            <CityLikesButton cityId={city.id} size="sm" />
           </div>
         </CardContent>
       </Card>
