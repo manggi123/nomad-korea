@@ -10,7 +10,7 @@ export default function RealtimeStats() {
 
   return (
     <section className="py-12 md:py-16">
-      <div className="container px-4">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 타이틀 */}
         <div className="mb-6">
           <h2 className="text-2xl md:text-3xl font-bold mb-2">📊 실시간 통계</h2>
