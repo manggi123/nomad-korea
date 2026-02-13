@@ -5,24 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import CityCard from "@/components/city-card";
-import { mockCities } from "@/lib/mock-data";
+import { City } from "@/types";
 import { useHomeFilters } from "@/hooks/use-home-filters";
 import { filterCities } from "@/lib/city-filters";
 import { useMemo } from "react";
 
-export default function TopRatedCities() {
+interface TopRatedCitiesProps {
+  cities: City[];
+}
+
+export default function TopRatedCities({ cities }: TopRatedCitiesProps) {
   const { filters, hasActiveFilters, setRegion, setBudget, setAmenity } = useHomeFilters();
 
   // 필터 적용
   const topRatedCities = useMemo(() => {
-    const cities = hasActiveFilters
-      ? filterCities(mockCities, filters)
-      : mockCities;
+    const filtered = hasActiveFilters
+      ? filterCities(cities, filters)
+      : cities;
 
-    return [...cities]
+    return [...filtered]
       .sort((a, b) => b.avgRating - a.avgRating)
       .slice(0, 9);
-  }, [filters, hasActiveFilters]);
+  }, [cities, filters, hasActiveFilters]);
 
   const regionFilterOptions = [
     { label: "전체", value: "all" as const },
@@ -41,7 +45,7 @@ export default function TopRatedCities() {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-gray-50" data-testid="top-rated-cities">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">

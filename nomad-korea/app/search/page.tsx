@@ -1,9 +1,10 @@
-import { searchCities } from '@/lib/search';
-import { applyCityFilters } from '@/lib/filter';
-import { mockCities } from '@/lib/mock-data';
+import { createClient } from '@/lib/supabase/server';
+import { getFilteredCities, searchCities, getAllCities } from '@/lib/supabase/queries/cities';
 import { SearchFilters } from './search-filters';
 import CityCard from '@/components/city-card';
 import { Search } from 'lucide-react';
+import { transformDbCitiesToCities } from '@/lib/utils/type-transformers';
+import type { Tables } from '@/types/database.types';
 
 interface SearchPageProps {
   searchParams: Promise<{
@@ -27,16 +28,40 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     ? parseInt(params.maxBudget)
     : undefined;
 
-  // 검색 실행
-  let results = query ? searchCities(mockCities, query) : mockCities;
+  const supabase = await createClient();
 
-  // 필터 적용
-  results = applyCityFilters(results, {
-    regions: selectedRegion ? [selectedRegion] : undefined,
-    minRating,
-    minBudget,
-    maxBudget,
-  });
+  // 모든 도시 가져오기 (지역 목록 추출용)
+  let allCities: Tables<'cities'>[];
+  try {
+    allCities = await getAllCities(supabase);
+  } catch {
+    allCities = [];
+  }
+
+  // 고유한 지역 목록 추출
+  const regions = Array.from(new Set(allCities.map(city => city.region))).sort();
+
+  // Supabase에서 검색 및 필터링 실행
+  let results: Tables<'cities'>[];
+  try {
+    if (query) {
+      // 검색어가 있으면 검색 함수 사용
+      results = await searchCities(supabase, query);
+    } else {
+      // 검색어가 없으면 필터만 적용
+      results = await getFilteredCities(supabase, {
+        regions: selectedRegion ? [selectedRegion] : undefined,
+        minRating,
+        minBudget,
+        maxBudget,
+      });
+    }
+  } catch {
+    results = [];
+  }
+
+  // 결과를 프론트엔드 타입으로 변환
+  const transformedResults = transformDbCitiesToCities(results);
 
   return (
     <div className="container py-8">
@@ -48,14 +73,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               &quot;{query}&quot; 검색 결과
             </h1>
             <p className="text-muted-foreground">
-              {results.length}개의 도시를 찾았습니다
+              {transformedResults.length}개의 도시를 찾았습니다
             </p>
           </>
         ) : (
           <>
             <h1 className="text-3xl font-bold mb-2">모든 도시</h1>
             <p className="text-muted-foreground">
-              {results.length}개의 도시가 있습니다
+              {transformedResults.length}개의 도시가 있습니다
             </p>
           </>
         )}
@@ -67,15 +92,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         <aside className="hidden lg:block">
           <div className="sticky top-4">
             <h2 className="text-lg font-semibold mb-4">필터</h2>
-            <SearchFilters />
+            <SearchFilters regions={regions} />
           </div>
         </aside>
 
         {/* 결과 목록 */}
         <main>
-          {results.length > 0 ? (
+          {transformedResults.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {results.map((city) => (
+              {transformedResults.map((city) => (
                 <CityCard key={city.id} city={city} />
               ))}
             </div>
@@ -97,7 +122,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       <div className="lg:hidden fixed bottom-4 left-4 right-4">
         <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
           <h3 className="font-semibold mb-3">필터</h3>
-          <SearchFilters />
+          <SearchFilters regions={regions} />
         </div>
       </div>
     </div>

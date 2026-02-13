@@ -2,17 +2,19 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { getUniqueRegions } from '@/lib/filter';
-import { mockCities } from '@/lib/mock-data';
+
+interface SearchFiltersProps {
+  regions: string[];
+}
 
 /**
  * 검색 필터 컴포넌트 (클라이언트)
+ * regions를 Props로 전달받음
  */
-export function SearchFilters() {
+export function SearchFilters({ regions }: SearchFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const regions = getUniqueRegions(mockCities);
   const selectedRegion = searchParams.get('region');
   const minRating = searchParams.get('minRating');
   const maxBudget = searchParams.get('maxBudget');

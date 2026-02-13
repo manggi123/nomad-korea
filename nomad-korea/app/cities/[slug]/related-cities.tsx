@@ -1,17 +1,28 @@
 import type { City } from '@/types';
-import { getRelatedCities } from '@/lib/city-utils';
-import { mockCities } from '@/lib/mock-data';
+import { createClient } from '@/lib/supabase/server';
+import { getRelatedCities as getRelatedCitiesFromDb } from '@/lib/supabase/queries/cities';
+import { transformDbCitiesToCities } from '@/lib/utils/type-transformers';
 import CityCard from '@/components/city-card';
 
 interface RelatedCitiesProps {
-  currentCity: City;
+  currentCityId: string;
 }
 
 /**
  * 관련 도시 추천 컴포넌트 (서버 컴포넌트)
+ * Supabase에서 관련 도시를 가져옵니다
  */
-export function RelatedCities({ currentCity }: RelatedCitiesProps) {
-  const relatedCities = getRelatedCities(currentCity, mockCities, 3);
+export async function RelatedCities({ currentCityId }: RelatedCitiesProps) {
+  const supabase = await createClient();
+
+  let relatedCities: City[] = [];
+  try {
+    const dbCities = await getRelatedCitiesFromDb(supabase, currentCityId, 3);
+    relatedCities = transformDbCitiesToCities(dbCities || []);
+  } catch {
+    // 에러 발생 시 빈 배열
+    relatedCities = [];
+  }
 
   // 관련 도시가 없으면 렌더링하지 않음
   if (relatedCities.length === 0) {
