@@ -31,6 +31,8 @@ export function transformDbCityToCity(dbCity: Tables<'cities'>): City {
     trendingScore: dbCity.trending_score,
     likes: dbCity.likes,
     dislikes: dbCity.dislikes,
+    latitude: dbCity.latitude,
+    longitude: dbCity.longitude,
   };
 }
 

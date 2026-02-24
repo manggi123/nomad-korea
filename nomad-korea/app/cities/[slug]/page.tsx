@@ -20,6 +20,7 @@ import { StatsCards } from '@/components/city-detail/stats-cards';
 import { CafeCard } from '@/components/city-detail/cafe-card';
 import { CoworkingCard } from '@/components/city-detail/coworking-card';
 import { EmptyState } from '@/components/city-detail/empty-state';
+import { CityMap } from '@/components/city-detail/city-map';
 import { ReviewSection } from './review-section';
 import { RelatedCities } from './related-cities';
 import { CityLikesButton } from '@/components/city-likes-button';
@@ -173,18 +174,17 @@ export default async function CityPage({ params }: CityPageProps) {
 
           {/* 사이드바 */}
           <div className="space-y-6">
-            {/* 지도 플레이스홀더 */}
+            {/* 도시 위치 지도 */}
             <Card>
               <CardHeader>
                 <CardTitle>위치</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="aspect-square bg-muted rounded-lg flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <MapPin className="h-12 w-12 mx-auto mb-2" />
-                    <p>지도 영역</p>
-                  </div>
-                </div>
+                <CityMap
+                  latitude={city.latitude}
+                  longitude={city.longitude}
+                  cityName={`${city.region} ${city.name}`}
+                />
               </CardContent>
             </Card>
 

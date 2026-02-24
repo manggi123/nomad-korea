@@ -32,6 +32,8 @@ export interface Database {
           trending_score: number
           likes: number
           dislikes: number
+          latitude: number | null
+          longitude: number | null
           created_at: string
           updated_at: string
         }
@@ -54,6 +56,8 @@ export interface Database {
           trending_score?: number
           likes?: number
           dislikes?: number
+          latitude?: number | null
+          longitude?: number | null
           created_at?: string
           updated_at?: string
         }
@@ -76,6 +80,8 @@ export interface Database {
           trending_score?: number
           likes?: number
           dislikes?: number
+          latitude?: number | null
+          longitude?: number | null
           created_at?: string
           updated_at?: string
         }
