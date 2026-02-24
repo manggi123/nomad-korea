@@ -4,25 +4,31 @@ import { TrendingUp, ArrowRight, Filter } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import CityCard from "@/components/city-card";
-import { mockCities } from "@/lib/mock-data";
+import { City } from "@/types";
 import { useHomeFilters } from "@/hooks/use-home-filters";
 import { filterCities } from "@/lib/city-filters";
 import { useMemo } from "react";
 
-export default function TrendingCities() {
+interface TrendingCitiesProps {
+  cities: City[];
+}
+
+export default function TrendingCities({ cities }: TrendingCitiesProps) {
   const { filters, hasActiveFilters } = useHomeFilters();
 
   // 필터 적용
   const filteredCities = useMemo(() => {
-    const cities = hasActiveFilters
-      ? filterCities(mockCities, filters)
-      : mockCities.filter((city) => city.trendingScore);
+    const filtered = hasActiveFilters
+      ? filterCities(cities, filters)
+      : cities.filter((city) => city.trendingScore && city.trendingScore > 0);
 
-    return cities.slice(0, 5);
-  }, [filters, hasActiveFilters]);
+    return filtered
+      .sort((a, b) => (b.trendingScore || 0) - (a.trendingScore || 0))
+      .slice(0, 5);
+  }, [cities, filters, hasActiveFilters]);
 
   return (
-    <section className="py-16 bg-white">
+    <section className="py-16 bg-white" data-testid="trending-cities">
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">

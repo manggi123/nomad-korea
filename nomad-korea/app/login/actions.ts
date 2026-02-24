@@ -41,13 +41,32 @@ export async function signup(formData: FormData) {
     redirect('/login?error=' + encodeURIComponent('비밀번호는 최소 8자 이상이어야 합니다'))
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
   })
 
   if (error) {
     redirect('/login?error=' + encodeURIComponent(error.message))
+  }
+
+  // 프로필 생성 (사용자가 생성된 경우)
+  if (data.user) {
+    const username = email.split('@')[0] // 이메일 앞부분을 기본 사용자명으로
+
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: data.user.id,
+        username: username,
+        avatar_url: null,
+        job_category: null,
+      })
+
+    if (profileError) {
+      console.error('프로필 생성 실패:', profileError)
+      // 프로필 생성 실패해도 회원가입은 성공으로 처리
+    }
   }
 
   revalidatePath('/', 'layout')

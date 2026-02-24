@@ -13,7 +13,7 @@ interface CityCardProps {
 
 export default function CityCard({ city, showTrending = false }: CityCardProps) {
   return (
-    <Link href={`/cities/${city.slug}`}>
+    <Link href={`/cities/${city.slug}`} data-testid="city-card">
       <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
         <div className="relative h-48 w-full">
           <Image

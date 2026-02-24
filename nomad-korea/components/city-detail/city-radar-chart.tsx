@@ -1,6 +1,6 @@
 'use client';
 
-import type { City } from '@/types';
+import type { Tables } from '@/types/database.types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Radar,
@@ -12,7 +12,7 @@ import {
 } from 'recharts';
 
 interface CityRadarChartProps {
-  city: City;
+  city: Tables<'cities'>;
 }
 
 /**
@@ -20,10 +20,10 @@ interface CityRadarChartProps {
  */
 export function CityRadarChart({ city }: CityRadarChartProps) {
   const data = [
-    { subject: '교통', score: city.transportScore },
-    { subject: '환경', score: city.environmentScore },
-    { subject: '개발자', score: city.devScore },
-    { subject: '디자이너', score: city.designScore },
+    { subject: '교통', score: Number(city.transport_score) },
+    { subject: '환경', score: Number(city.environment_score) },
+    { subject: '개발자', score: Number(city.dev_score) },
+    { subject: '디자이너', score: Number(city.design_score) },
   ];
 
   return (

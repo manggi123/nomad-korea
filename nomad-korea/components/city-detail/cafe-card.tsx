@@ -1,9 +1,9 @@
-import type { Cafe } from '@/types';
+import type { Tables } from '@/types/database.types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, Wifi, Zap, MapPin } from 'lucide-react';
 
 interface CafeCardProps {
-  cafe: Cafe;
+  cafe: Tables<'cafes'>;
 }
 
 /**
@@ -11,7 +11,7 @@ interface CafeCardProps {
  */
 export function CafeCard({ cafe }: CafeCardProps) {
   // 가격대 표시 (1: 저렴, 2: 보통, 3: 비싼)
-  const priceDisplay = '₩'.repeat(cafe.priceLevel);
+  const priceDisplay = '₩'.repeat(cafe.price_level);
 
   return (
     <Card className="hover:shadow-md transition-shadow">
@@ -27,13 +27,13 @@ export function CafeCard({ cafe }: CafeCardProps) {
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="font-medium">{cafe.rating.toFixed(1)}</span>
+            <span className="font-medium">{Number(cafe.rating).toFixed(1)}</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
             <Wifi className="h-4 w-4" />
-            <span>{cafe.wifiSpeed}Mbps</span>
+            <span>{cafe.wifi_speed}Mbps</span>
           </div>
-          {cafe.hasOutlet && (
+          {cafe.has_outlet && (
             <div className="flex items-center gap-1 text-green-600">
               <Zap className="h-4 w-4" />
               <span className="text-xs">콘센트</span>

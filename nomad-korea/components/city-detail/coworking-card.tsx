@@ -1,9 +1,9 @@
-import type { CoworkingSpace } from '@/types';
+import type { Tables } from '@/types/database.types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, MapPin, Calendar, CreditCard } from 'lucide-react';
 
 interface CoworkingCardProps {
-  coworking: CoworkingSpace;
+  coworking: Tables<'coworking_spaces'>;
 }
 
 /**
@@ -26,18 +26,18 @@ export function CoworkingCard({ coworking }: CoworkingCardProps) {
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="font-medium">{coworking.rating.toFixed(1)}</span>
+            <span className="font-medium">{Number(coworking.rating).toFixed(1)}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div className="flex items-center gap-1 text-muted-foreground">
             <Calendar className="h-4 w-4" />
-            <span>{formatPrice(coworking.dailyPrice)}/일</span>
+            <span>{formatPrice(coworking.daily_price)}/일</span>
           </div>
           <div className="flex items-center gap-1 text-muted-foreground">
             <CreditCard className="h-4 w-4" />
-            <span>{formatPrice(coworking.monthlyPrice)}/월</span>
+            <span>{formatPrice(coworking.monthly_price)}/월</span>
           </div>
         </div>
 

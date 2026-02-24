@@ -1,13 +1,22 @@
-"use client";
-
 import { MessageSquare, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ReviewCard from "@/components/review-card";
-import { mockReviews } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase/server";
+import { getLatestReviews } from "@/lib/supabase/queries/reviews";
+import { transformReviewsWithUserToReviews } from "@/lib/utils/type-transformers";
+import type { Review } from "@/types";
 
-export default function LatestReviews() {
-  const latestReviews = mockReviews.slice(0, 4);
+export default async function LatestReviews() {
+  const supabase = await createClient();
+
+  let reviews: Review[];
+  try {
+    const dbReviews = await getLatestReviews(supabase, 4);
+    reviews = transformReviewsWithUserToReviews(dbReviews || []);
+  } catch {
+    reviews = [];
+  }
 
   return (
     <section className="py-16 bg-gray-50">
@@ -32,21 +41,35 @@ export default function LatestReviews() {
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          {latestReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
-          ))}
-        </div>
+        {reviews.length > 0 ? (
+          <div className="grid md:grid-cols-2 gap-6">
+            {reviews.map((review) => (
+              <ReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-muted-foreground">
+            <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <p>아직 작성된 리뷰가 없습니다.</p>
+            <Link href="/reviews/new">
+              <Button variant="outline" className="mt-4">
+                첫 리뷰 작성하기
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Mobile View All Button */}
-        <div className="mt-8 text-center md:hidden">
-          <Link href="/reviews">
-            <Button variant="outline" className="w-full">
-              전체 리뷰 보기
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </Link>
-        </div>
+        {reviews.length > 0 && (
+          <div className="mt-8 text-center md:hidden">
+            <Link href="/reviews">
+              <Button variant="outline" className="w-full">
+                전체 리뷰 보기
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

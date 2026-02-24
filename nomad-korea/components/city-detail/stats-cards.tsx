@@ -1,9 +1,9 @@
-import type { City } from '@/types';
+import type { Tables } from '@/types/database.types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Wifi, Coffee, Briefcase, DollarSign } from 'lucide-react';
 
 interface StatsCardsProps {
-  city: City;
+  city: Tables<'cities'>;
 }
 
 /**
@@ -13,25 +13,25 @@ export function StatsCards({ city }: StatsCardsProps) {
   const stats = [
     {
       title: '평균 생활비',
-      value: `${Math.round(city.avgMonthlyCost / 10000)}만원`,
+      value: `${Math.round(city.avg_monthly_cost / 10000)}만원`,
       icon: DollarSign,
       description: '월 평균',
     },
     {
       title: '인터넷 속도',
-      value: `${city.avgInternetSpeed}Mbps`,
+      value: `${city.avg_internet_speed}Mbps`,
       icon: Wifi,
       description: '평균',
     },
     {
       title: '카페 수',
-      value: `${city.cafeCount}개`,
+      value: `${city.cafe_count}개`,
       icon: Coffee,
       description: '주변',
     },
     {
       title: '코워킹 스페이스',
-      value: `${city.coworkingCount}개`,
+      value: `${city.coworking_count}개`,
       icon: Briefcase,
       description: '이용 가능',
     },

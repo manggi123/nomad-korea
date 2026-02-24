@@ -18,6 +18,8 @@ export interface City {
   trendingScore?: number;
   likes?: number;
   dislikes?: number;
+  latitude?: number | null;
+  longitude?: number | null;
 }
 
 // 리뷰 데이터 타입
