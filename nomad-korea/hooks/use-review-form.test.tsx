@@ -23,10 +23,10 @@ const mockCreatedReview = {
   comment: '정말 좋은 도시입니다. 추천합니다!',
 };
 
-let mockGetUser = vi.fn();
-let mockSelect = vi.fn();
-let mockInsert = vi.fn();
-let mockUpdate = vi.fn();
+const mockGetUser = vi.fn();
+const mockSelect = vi.fn();
+const mockInsert = vi.fn();
+const mockUpdate = vi.fn();
 
 vi.mock('@/lib/supabase/client', () => ({
   createClient: () => ({
